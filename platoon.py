@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from KEX_important import cubic_spline_planner
+import cubic_spline_planner
 
 # Vehicle parameters
 PARA = 1 #Use to minimize the vehicle parameters
@@ -15,7 +15,7 @@ WB = 2.5/PARA  # [m]
 
 
 # start positions
-NUM_CARS = 2 #NUMBER OF CARS
+NUM_CARS = 4 #NUMBER OF CARS
 MAX_CARS = 7
 X_START1 = 60
 X_START2 = 50
@@ -37,7 +37,7 @@ V_MIN = 0
 V_INIT = 60
 
 #Constrains on distance
-S0 = 1 # 5 meter between the cars is the minimum possible.
+S0 = 1 # 1 meter between the cars is the minimum possible.
 
 # time step
 DT = 0.1/6
@@ -232,11 +232,9 @@ def animation():
 
         # If the accelartion is different from 0 the velocity for the car should change according to a = dv/dt -> dv = a*dt
         # And the total velocitiy is then v_new = v_old + dt
-        j = 0 # j is needed though the lists length always get longer.
         for i in range(NUM_CARS):
-            v_new = u_list[-NUM_CARS+ i] * DT + v_list[-NUM_CARS + i - j]
+            v_new = u_list[-NUM_CARS+ i] * DT + v_list[-NUM_CARS]
             v_list.append(v_new)
-            j = j + 1
 
         for i in range(NUM_CARS):
             u_new = 0 # Here we should add some call to MPC function
@@ -247,14 +245,12 @@ def animation():
         #The displacement in 1 iteration is calculated by x = v*dt
         # And the new position is calculated by the old position + the displacement
 
-        k = 0 # same reason as the j above
         temp_disp_list = []
         for i in range(NUM_CARS):
             displacement = v_list[-NUM_CARS + i] * DT
             temp_disp_list.append(displacement)
-            x_new = x_list[-NUM_CARS + i - k] + displacement
+            x_new = x_list[-NUM_CARS] + displacement
             x_list.append(x_new)
-            k = k + 1
 
         distance_list = distance(distance_list, temp_disp_list)
 
@@ -267,5 +263,4 @@ def main():
     animation()
 
 main()
-
 
